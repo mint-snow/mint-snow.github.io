@@ -94,8 +94,8 @@
     <div class="field"><label>运费险（元/件）</label><div class="input-wrap"><input id="bp_insurance" type="number" inputmode="decimal" value="2"><span class="unit">元</span></div></div>
     <div class="field"><label>主播工资（折算单件，元）</label><div class="input-wrap"><input id="bp_anchor" type="number" inputmode="decimal" value="1.5"><span class="unit">元</span></div></div>
     <div class="field"><label>平台费 / 减免（占售价 %）</label><div class="input-wrap"><input id="bp_plat" type="number" inputmode="decimal" value="8"><span class="unit">%</span></div></div>
-    <div class="field"><label>货物成本（元/件）</label><div class="input-wrap"><input id="bp_cost" type="number" inputmode="decimal" value="14"><span class="unit">元</span></div></div>
-    <div class="field"><label>其他成本（元/件）</label><div class="input-wrap"><input id="bp_other" type="number" inputmode="decimal" value="6"><span class="unit">元</span></div></div>
+    <div class="field"><label>货物成本（元/件）</label><div class="input-wrap"><input id="bp_cost" type="number" inputmode="decimal" value="32"><span class="unit">元</span></div></div>
+    <div class="field"><label>退货损耗（元/件）</label><div class="input-wrap"><input id="bp_retLoss" type="number" inputmode="decimal" value="6"><span class="unit">元</span></div></div>
     <div class="field"><label>退货率（%）</label><div class="input-wrap"><input id="bp_ret" type="number" inputmode="decimal" value="40"><span class="unit">%</span></div></div>
   </div>
   <div class="card">
@@ -115,19 +115,18 @@
     <div class="res-row"><span class="k">运费险</span><span class="v red" id="bp_r_ins">—</span></div>
     <div class="res-row"><span class="k">主播工资</span><span class="v red" id="bp_r_anchor">—</span></div>
     <div class="res-row"><span class="k">货物成本</span><span class="v red" id="bp_r_cost">—</span></div>
-    <div class="res-row"><span class="k">其他成本</span><span class="v red" id="bp_r_other">—</span></div>
     <div class="res-row"><span class="k">平台费</span><span class="v red" id="bp_r_plat">—</span></div>
   </div>
   <div class="card">
     <h2>保本线速查</h2>
-    <div class="formula"><em>毛利率</em> = 毛利额 ÷ 售价 = <span id="bp_f_margin">—</span><br><em>保本ROI</em> = 1 ÷ (毛利率 × (1−退货率)) = 1 ÷ (<span id="bp_f_denom">—</span>) = <b id="bp_f_beROI">—</b></div>
+    <div class="formula"><em>毛利率</em> = 毛利额 ÷ 售价 = <span id="bp_f_margin">—</span><br><em>保本ROI</em> = 售价 ÷ (毛利额×(1−退货率) − 退货率×退货损耗) = <b id="bp_f_beROI">—</b></div>
   </div>
 </div>
 
 <!-- ==================== 面板2：盈亏计算器 ==================== -->
 <div id="panel2" class="panel">
   <h1>💰 盈亏计算器</h1>
-  <p class="tip">《广州市牧马人服饰有限公司》休闲裤出品-仅供内部使用</p>
+  <p class="tip">成交成本 = (ROI×退货率×退货损耗 + 售价) ÷ (ROI×(1−退货率))；盈亏 = 毛利额 − 成交成本</p>
   <div class="card">
     <h2>输入</h2>
     <div class="field"><label>ROI（投流ROI）</label><div class="input-wrap"><input id="yk_roi" type="number" inputmode="decimal" value="3"><span class="unit">倍</span></div></div>
@@ -137,18 +136,18 @@
     <div class="field"><label>平台服务费（占售价 %）</label><div class="input-wrap"><input id="yk_platRate" type="number" inputmode="decimal" value="0.6"><span class="unit">%</span></div></div>
     <div class="field"><label>主播工资（元/件）</label><div class="input-wrap"><input id="yk_anchor" type="number" inputmode="decimal" value="3"><span class="unit">元</span></div></div>
     <div class="field"><label>货物成本（元/件）</label><div class="input-wrap"><input id="yk_cost" type="number" inputmode="decimal" value="53"><span class="unit">元</span></div></div>
-    <div class="field"><label>其他成本（元/件）</label><div class="input-wrap"><input id="yk_other" type="number" inputmode="decimal" value="0"><span class="unit">元</span></div></div>
+    <div class="field"><label>退货损耗（元/件）</label><div class="input-wrap"><input id="yk_retLoss" type="number" inputmode="decimal" value="6"><span class="unit">元</span></div></div>
     <div class="field"><label>退货率（%）</label><div class="input-wrap"><input id="yk_ret" type="number" inputmode="decimal" value="40"><span class="unit">%</span></div></div>
   </div>
   <div class="card">
     <h2>结果</h2>
     <div id="yk_status" class="status win">每件盈利</div>
     <div class="res-row"><span class="k">售价</span><span class="v" id="yk_r_price">—</span></div>
-    <div class="res-row"><span class="k">成交成本（售价 ÷ ROI）</span><span class="v red" id="yk_r_dealCost">—</span></div>
     <div class="res-row"><span class="k">平台服务费</span><span class="v red" id="yk_r_platFee">—</span></div>
-    <div class="res-row"><span class="k">总成本</span><span class="v" id="yk_r_totalCost">—</span></div>
-    <div class="res-row"><span class="k">每件盈亏</span><span class="v green" id="yk_r_profit" style="font-size:18px">—</span></div>
+    <div class="res-row"><span class="k">毛利额</span><span class="v green" id="yk_r_gross">—</span></div>
     <div class="res-row"><span class="k">毛利率</span><span class="v indigo" id="yk_r_margin">—</span></div>
+    <div class="res-row"><span class="k">成交成本</span><span class="v red" id="yk_r_dealCost">—</span></div>
+    <div class="res-row"><span class="k">每件盈亏</span><span class="v green" id="yk_r_profit" style="font-size:18px">—</span></div>
   </div>
   <div class="card">
     <h2>成本明细拆解</h2>
@@ -157,7 +156,6 @@
     <div class="res-row"><span class="k">平台服务费</span><span class="v red" id="yk_d_plat">—</span></div>
     <div class="res-row"><span class="k">主播工资</span><span class="v red" id="yk_d_anchor">—</span></div>
     <div class="res-row"><span class="k">货物成本</span><span class="v red" id="yk_d_cost">—</span></div>
-    <div class="res-row"><span class="k">其他成本</span><span class="v red" id="yk_d_other">—</span></div>
   </div>
 </div>
 
@@ -178,9 +176,9 @@
   function fmtP(v){ if(!isFinite(v)) return '—'; return v.toFixed(1)+'%'; }
 
   // ===== 记忆功能：localStorage 持久化 =====
-  var STORE_KEY = 'wb_roi_calc_v1';
-  var FIELDS = ['bp_price','bp_ship','bp_insurance','bp_anchor','bp_plat','bp_cost','bp_other','bp_ret',
-                'yk_roi','yk_price','yk_ship','yk_ins','yk_platRate','yk_anchor','yk_cost','yk_other','yk_ret'];
+  var STORE_KEY = 'wb_roi_calc_v3';
+  var FIELDS = ['bp_price','bp_ship','bp_insurance','bp_anchor','bp_plat','bp_cost','bp_retLoss','bp_ret',
+                'yk_roi','yk_price','yk_ship','yk_ins','yk_platRate','yk_anchor','yk_cost','yk_retLoss','yk_ret'];
   function loadStore(){
     try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; }
     catch(e){ return {}; }
@@ -225,12 +223,14 @@
   function calcBP(){
     var price=num($('bp_price')), ship=num($('bp_ship')), ins=num($('bp_insurance')),
         anchor=num($('bp_anchor')), platRate=num($('bp_plat'))/100,
-        cost=num($('bp_cost')), other=num($('bp_other')), retRate=num($('bp_ret'))/100;
+        cost=num($('bp_cost')), retRate=num($('bp_ret'))/100, retLoss=num($('bp_retLoss'));
     var platFee = price*platRate;
-    var totalCost = ship+ins+anchor+cost+other+platFee;
+    var totalCost = ship+ins+anchor+cost+platFee;
     var profit = price-totalCost;
     var marginRate = price>0?profit/price:0;
-    var beROI = (marginRate>0 && retRate<1)?1/(marginRate*(1-retRate)):0;
+    // 保本ROI = 售价 ÷ (毛利额×(1−退货率) − 退货率×退货损耗)
+    var denom = profit*(1-retRate) - retRate*retLoss;
+    var beROI = denom>0 ? price/denom : 0;
 
     $('bp_r_price').textContent = fmtY(price);
     $('bp_r_platFee').textContent = fmtY(platFee);
@@ -245,45 +245,46 @@
     else{st.className='status win';st.textContent='毛利额 > 0（单件盈利）';}
     $('bp_r_ship').textContent=fmtY(ship);$('bp_r_ins').textContent=fmtY(ins);
     $('bp_r_anchor').textContent=fmtY(anchor);$('bp_r_cost').textContent=fmtY(cost);
-    $('bp_r_other').textContent=fmtY(other);$('bp_r_plat').textContent=fmtY(platFee);
-    var denom=marginRate*(1-retRate);
+    $('bp_r_plat').textContent=fmtY(platFee);
     $('bp_f_margin').textContent=fmtP(marginRate*100);
-    $('bp_f_denom').textContent='( '+fmtP(marginRate*100)+' × '+(1-retRate).toFixed(2)+' ) = '+denom.toFixed(4);
     $('bp_f_beROI').textContent=beROI>0?beROI.toFixed(2):'—';
     persist();
   }
-  ['bp_price','bp_ship','bp_insurance','bp_anchor','bp_plat','bp_cost','bp_other','bp_ret'].forEach(function(id){$(id).addEventListener('input',calcBP);});
+  ['bp_price','bp_ship','bp_insurance','bp_anchor','bp_plat','bp_cost','bp_retLoss','bp_ret'].forEach(function(id){$(id).addEventListener('input',calcBP);});
 
   // ===== 盈亏计算器 =====
   function calcYK(){
     var roi=num($('yk_roi')), retRate=num($('yk_ret'))/100,
         price=num($('yk_price')), ship=num($('yk_ship')),
         ins=num($('yk_ins')), platRate=num($('yk_platRate'))/100,
-        anchor=num($('yk_anchor')), cost=num($('yk_cost')), other=num($('yk_other'));
-    var dealCost = roi>0 ? price/roi : 0;
+        anchor=num($('yk_anchor')), cost=num($('yk_cost')), retLoss=num($('yk_retLoss'));
     var platFee = price*platRate;
-    var baseCost = ship+ins+anchor+cost+other;
-    var totalCost = baseCost+platFee+dealCost;
-    var grossProfit = price-baseCost-platFee;
-    var profit = grossProfit*(1-retRate)-dealCost;
-    var marginRate = price>0?profit/price:0;
+    // 毛利额 = 售价 − 所有成本项（快递费+运费险+平台服务费+主播+货本）
+    var grossProfit = price - ship - ins - platFee - anchor - cost;
+    // 毛利率 = 毛利额 ÷ 售价
+    var marginRate = price>0 ? grossProfit/price : 0;
+    // 成交成本 = (ROI×退货率×退货损耗 + 售价) ÷ (ROI×(1−退货率))，退货损耗自动按退货率折算
+    var dealCost = (roi>0 && retRate<1) ? (roi*retRate*retLoss + price)/(roi*(1-retRate)) : 0;
+    // 每件盈亏 = 毛利额 − 成交成本
+    var profit = grossProfit - dealCost;
 
     $('yk_r_price').textContent=fmtY(price);
-    $('yk_r_dealCost').textContent=fmtY(dealCost);
     $('yk_r_platFee').textContent=fmtY(platFee);
-    $('yk_r_totalCost').textContent=fmtY(totalCost);
+    var g=$('yk_r_gross'); g.textContent=fmtY(grossProfit);
+    g.className='v '+(grossProfit>=0?'green':'red');
+    $('yk_r_margin').textContent=fmtP(marginRate*100);
+    $('yk_r_dealCost').textContent=fmtY(dealCost);
     var pe=$('yk_r_profit');pe.textContent=fmtY(profit);
     pe.className='v '+(profit>=0?'green':'red');
-    $('yk_r_margin').textContent=fmtP(marginRate*100);
     var st=$('yk_status');
     if(profit<0){st.className='status lose';st.textContent='每件亏损 ❌';}
     else{st.className='status win';st.textContent='每件盈利 ✅';}
     $('yk_d_ship').textContent=fmtY(ship);$('yk_d_ins').textContent=fmtY(ins);
     $('yk_d_plat').textContent=fmtY(platFee);$('yk_d_anchor').textContent=fmtY(anchor);
-    $('yk_d_cost').textContent=fmtY(cost);$('yk_d_other').textContent=fmtY(other);
+    $('yk_d_cost').textContent=fmtY(cost);
     persist();
   }
-  ['yk_roi','yk_ret','yk_price','yk_ship','yk_ins','yk_platRate','yk_anchor','yk_cost','yk_other'].forEach(function(id){$(id).addEventListener('input',calcYK);});
+  ['yk_roi','yk_ret','yk_price','yk_ship','yk_ins','yk_platRate','yk_anchor','yk_cost','yk_retLoss'].forEach(function(id){$(id).addEventListener('input',calcYK);});
 
   // 恢复默认数据：清空记忆并回到初始值
   var rb=$('resetBtn');
