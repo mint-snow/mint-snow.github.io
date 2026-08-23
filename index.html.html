@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ROI计算器">
+<title>ROI计算器</title>
+<style>
+  :root{
+    --bg:#0f172a; --card:#1e293b; --card2:#243349; --line:#334155;
+    --text:#e2e8f0; --sub:#94a3b8; --green:#22c55e; --red:#ef4444;
+    --blue:#38bdf8; --amber:#f59e0b; --indigo:#818cf8;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    -webkit-text-size-adjust:100%}
+  body{padding:calc(env(safe-area-inset-top) + 10px) 14px calc(env(safe-area-inset-bottom) + 20px);
+    max-width:480px;margin:0 auto}
+  .tabs{display:flex;gap:0;background:var(--card);border-radius:14px;padding:4px;margin-bottom:16px;
+    border:1px solid var(--line)}
+  .tab{flex:1;text-align:center;font-size:14px;font-weight:600;padding:11px 6px;
+    border-radius:11px;cursor:pointer;color:var(--sub);transition:all .2s}
+  .tab.active{background:var(--card2);color:var(--text)}
+  .tab:active{transform:scale(.97)}
+  .panel{display:none}
+  .panel.active{display:block}
+  h1{font-size:20px;margin:0 0 4px;font-weight:700}
+  .tip{font-size:12px;color:var(--sub);margin:0 0 16px;line-height:1.5}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:16px;margin-bottom:14px}
+  .card h2{font-size:14px;margin:0 0 12px;color:var(--sub);font-weight:600;
+    letter-spacing:.5px}
+  label{display:block;font-size:13px;color:var(--sub);margin:0 0 6px}
+  .field{margin-bottom:14px}
+  .field:last-child{margin-bottom:0}
+  .input-wrap{position:relative;display:flex;align-items:center}
+  input{width:100%;font-size:16px;padding:13px 46px 13px 14px;border-radius:12px;
+    border:1px solid var(--line);background:var(--card2);color:var(--text);
+    outline:none;font-weight:600}
+  input:focus{border-color:var(--blue)}
+  .unit{position:absolute;right:14px;font-size:13px;color:var(--sub);font-weight:600}
+  .res-row{display:flex;justify-content:space-between;align-items:center;
+    padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px}
+  .res-row:last-child{border-bottom:none}
+  .res-row .k{color:var(--sub)}
+  .res-row .v{font-weight:700;font-size:15px}
+  .v.green{color:var(--green)} .v.red{color:var(--red)} .v.blue{color:var(--blue)}
+  .v.amber{color:var(--amber)} .v.indigo{color:var(--indigo)}
+  .status{text-align:center;font-size:17px;font-weight:800;padding:14px;
+    border-radius:14px;margin:4px 0 10px}
+  .status.win{background:rgba(34,197,94,.15);color:var(--green)}
+  .status.lose{background:rgba(239,68,68,.15);color:var(--red)}
+  .status.edge{background:rgba(245,158,11,.15);color:var(--amber)}
+  .bar{height:26px;border-radius:8px;background:var(--card2);
+    position:relative;overflow:hidden;margin:8px 0 4px}
+  .bar .fill{height:100%;border-radius:8px;transition:width .3s}
+  .bar .line{position:absolute;top:-3px;bottom:-3px;width:3px;background:var(--amber)}
+  .bar-legend{display:flex;justify-content:space-between;font-size:11px;color:var(--sub)}
+  .note{font-size:11px;color:var(--sub);line-height:1.6;margin-top:6px}
+  .note b{color:var(--text)}
+  .formula{font-family:"Fira Code","Cascadia Code",monospace;background:var(--card2);
+    padding:10px 12px;border-radius:10px;font-size:12px;color:var(--sub);
+    line-height:1.7;margin-top:6px;word-break:break-all}
+  .formula em{color:var(--blue);font-style:normal}
+  .scenario{background:var(--card2);border-radius:12px;padding:12px;margin-bottom:8px}
+  .scenario .s-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .scenario .s-header .s-name{font-size:14px;font-weight:600;color:var(--amber)}
+  .scenario .s-header .s-result{font-size:14px;font-weight:700}
+  .reset{width:100%;background:var(--card2);color:var(--sub);border:1px solid var(--line);
+    border-radius:10px;padding:11px;font-size:14px;margin-top:4px;cursor:pointer}
+  .reset:active{border-color:var(--blue);color:var(--text)}
+</style>
+</head>
+<body>
+
+<div class="tabs">
+  <div class="tab active" data-panel="panel1">保本ROI</div>
+  <div class="tab" data-panel="panel2">盈亏计算器</div>
+</div>
+
+<!-- ==================== 面板1：保本ROI ==================== -->
+<div id="panel1" class="panel active">
+  <h1>📦 保本ROI</h1>
+  <p class="tip">《广州市牧马人服饰有限公司》休闲裤出品-仅供内部使用</p>
+  <div class="card">
+    <h2>输入（单件商品）</h2>
+    <div class="field"><label>售价（元）</label><div class="input-wrap"><input id="bp_price" type="number" inputmode="decimal" value="69.9"><span class="unit">元</span></div></div>
+    <div class="field"><label>快递费（元/件）</label><div class="input-wrap"><input id="bp_ship" type="number" inputmode="decimal" value="2"><span class="unit">元</span></div></div>
+    <div class="field"><label>运费险（元/件）</label><div class="input-wrap"><input id="bp_insurance" type="number" inputmode="decimal" value="2"><span class="unit">元</span></div></div>
+    <div class="field"><label>主播工资（折算单件，元）</label><div class="input-wrap"><input id="bp_anchor" type="number" inputmode="decimal" value="1.5"><span class="unit">元</span></div></div>
+    <div class="field"><label>平台费 / 减免（占售价 %）</label><div class="input-wrap"><input id="bp_plat" type="number" inputmode="decimal" value="8"><span class="unit">%</span></div></div>
+    <div class="field"><label>货物成本（元/件）</label><div class="input-wrap"><input id="bp_cost" type="number" inputmode="decimal" value="14"><span class="unit">元</span></div></div>
+    <div class="field"><label>其他成本（元/件）</label><div class="input-wrap"><input id="bp_other" type="number" inputmode="decimal" value="6"><span class="unit">元</span></div></div>
+    <div class="field"><label>退货率（%）</label><div class="input-wrap"><input id="bp_ret" type="number" inputmode="decimal" value="40"><span class="unit">%</span></div></div>
+  </div>
+  <div class="card">
+    <h2>计算结果</h2>
+    <div id="bp_status" class="status win">毛利额 > 0</div>
+    <div class="res-row"><span class="k">售价</span><span class="v" id="bp_r_price">—</span></div>
+    <div class="res-row"><span class="k">平台费金额</span><span class="v red" id="bp_r_platFee">—</span></div>
+    <div class="res-row"><span class="k">总成本</span><span class="v" id="bp_r_totalCost">—</span></div>
+    <div class="res-row"><span class="k">毛利额</span><span class="v green" id="bp_r_profit">—</span></div>
+    <div class="res-row"><span class="k">毛利率</span><span class="v indigo" id="bp_r_margin">—</span></div>
+    <div class="res-row"><span class="k">退货率</span><span class="v amber" id="bp_r_ret">—</span></div>
+    <div class="res-row"><span class="k">保本 ROI</span><span class="v amber" id="bp_r_beROI" style="font-size:18px">—</span></div>
+  </div>
+  <div class="card">
+    <h2>成本拆解</h2>
+    <div class="res-row"><span class="k">快递费</span><span class="v red" id="bp_r_ship">—</span></div>
+    <div class="res-row"><span class="k">运费险</span><span class="v red" id="bp_r_ins">—</span></div>
+    <div class="res-row"><span class="k">主播工资</span><span class="v red" id="bp_r_anchor">—</span></div>
+    <div class="res-row"><span class="k">货物成本</span><span class="v red" id="bp_r_cost">—</span></div>
+    <div class="res-row"><span class="k">其他成本</span><span class="v red" id="bp_r_other">—</span></div>
+    <div class="res-row"><span class="k">平台费</span><span class="v red" id="bp_r_plat">—</span></div>
+  </div>
+  <div class="card">
+    <h2>保本线速查</h2>
+    <div class="formula"><em>毛利率</em> = 毛利额 ÷ 售价 = <span id="bp_f_margin">—</span><br><em>保本ROI</em> = 1 ÷ (毛利率 × (1−退货率)) = 1 ÷ (<span id="bp_f_denom">—</span>) = <b id="bp_f_beROI">—</b></div>
+  </div>
+</div>
+
+<!-- ==================== 面板2：盈亏计算器 ==================== -->
+<div id="panel2" class="panel">
+  <h1>💰 盈亏计算器</h1>
+  <p class="tip">《广州市牧马人服饰有限公司》休闲裤出品-仅供内部使用</p>
+  <div class="card">
+    <h2>输入</h2>
+    <div class="field"><label>ROI（投流ROI）</label><div class="input-wrap"><input id="yk_roi" type="number" inputmode="decimal" value="3"><span class="unit">倍</span></div></div>
+    <div class="field"><label>售价（元）</label><div class="input-wrap"><input id="yk_price" type="number" inputmode="decimal" value="139"><span class="unit">元</span></div></div>
+    <div class="field"><label>快递费（元/件）</label><div class="input-wrap"><input id="yk_ship" type="number" inputmode="decimal" value="2.7"><span class="unit">元</span></div></div>
+    <div class="field"><label>运费险（元/件）</label><div class="input-wrap"><input id="yk_ins" type="number" inputmode="decimal" value="3.5"><span class="unit">元</span></div></div>
+    <div class="field"><label>平台服务费（占售价 %）</label><div class="input-wrap"><input id="yk_platRate" type="number" inputmode="decimal" value="0.6"><span class="unit">%</span></div></div>
+    <div class="field"><label>主播工资（元/件）</label><div class="input-wrap"><input id="yk_anchor" type="number" inputmode="decimal" value="3"><span class="unit">元</span></div></div>
+    <div class="field"><label>货物成本（元/件）</label><div class="input-wrap"><input id="yk_cost" type="number" inputmode="decimal" value="53"><span class="unit">元</span></div></div>
+    <div class="field"><label>其他成本（元/件）</label><div class="input-wrap"><input id="yk_other" type="number" inputmode="decimal" value="0"><span class="unit">元</span></div></div>
+    <div class="field"><label>退货率（%）</label><div class="input-wrap"><input id="yk_ret" type="number" inputmode="decimal" value="40"><span class="unit">%</span></div></div>
+  </div>
+  <div class="card">
+    <h2>结果</h2>
+    <div id="yk_status" class="status win">每件盈利</div>
+    <div class="res-row"><span class="k">售价</span><span class="v" id="yk_r_price">—</span></div>
+    <div class="res-row"><span class="k">成交成本（售价 ÷ ROI）</span><span class="v red" id="yk_r_dealCost">—</span></div>
+    <div class="res-row"><span class="k">平台服务费</span><span class="v red" id="yk_r_platFee">—</span></div>
+    <div class="res-row"><span class="k">总成本</span><span class="v" id="yk_r_totalCost">—</span></div>
+    <div class="res-row"><span class="k">每件盈亏</span><span class="v green" id="yk_r_profit" style="font-size:18px">—</span></div>
+    <div class="res-row"><span class="k">毛利率</span><span class="v indigo" id="yk_r_margin">—</span></div>
+  </div>
+  <div class="card">
+    <h2>成本明细拆解</h2>
+    <div class="res-row"><span class="k">快递费</span><span class="v red" id="yk_d_ship">—</span></div>
+    <div class="res-row"><span class="k">运费险</span><span class="v red" id="yk_d_ins">—</span></div>
+    <div class="res-row"><span class="k">平台服务费</span><span class="v red" id="yk_d_plat">—</span></div>
+    <div class="res-row"><span class="k">主播工资</span><span class="v red" id="yk_d_anchor">—</span></div>
+    <div class="res-row"><span class="k">货物成本</span><span class="v red" id="yk_d_cost">—</span></div>
+    <div class="res-row"><span class="k">其他成本</span><span class="v red" id="yk_d_other">—</span></div>
+  </div>
+</div>
+
+<button class="reset" id="resetBtn">↺ 恢复默认数据</button>
+
+<script>
+(function(){
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512"><rect width="512" height="512" rx="96" fill="#0f172a"/><rect x="100" y="300" width="76" height="116" rx="12" fill="#22c55e"/><rect x="218" y="220" width="76" height="196" rx="12" fill="#38bdf8"/><rect x="336" y="150" width="76" height="266" rx="12" fill="#f59e0b"/></svg>';
+  var svgUrl = 'data:image/svg+xml;base64,' + btoa(svg);
+  var manifest = {name:'ROI计算器',short_name:'ROI计算器',start_url:location.href,display:'standalone',background_color:'#0f172a',theme_color:'#0f172a',icons:[{src:svgUrl,sizes:'512x512',type:'image/svg+xml'}]};
+  var lk = document.createElement('link'); lk.rel = 'manifest';
+  lk.href = URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'}));
+  document.head.appendChild(lk);
+
+  var $ = function(id){return document.getElementById(id)};
+  function num(el){var v=parseFloat(el.value); return isFinite(v)?v:0;}
+  function fmtY(v){ if(!isFinite(v)) return '—'; return '¥'+v.toFixed(2); }
+  function fmtP(v){ if(!isFinite(v)) return '—'; return v.toFixed(1)+'%'; }
+
+  // ===== 记忆功能：localStorage 持久化 =====
+  var STORE_KEY = 'wb_roi_calc_v1';
+  var FIELDS = ['bp_price','bp_ship','bp_insurance','bp_anchor','bp_plat','bp_cost','bp_other','bp_ret',
+                'yk_roi','yk_price','yk_ship','yk_ins','yk_platRate','yk_anchor','yk_cost','yk_other','yk_ret'];
+  function loadStore(){
+    try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; }
+    catch(e){ return {}; }
+  }
+  function saveStore(obj){
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(obj)); } catch(e){}
+  }
+  function persist(){
+    var s = loadStore();
+    FIELDS.forEach(function(id){ var el=$(id); if(el) s[id]=el.value; });
+    var active = document.querySelector('.tab.active');
+    if(active) s.activeTab = active.dataset.panel;
+    saveStore(s);
+  }
+  function restore(){
+    var s = loadStore();
+    FIELDS.forEach(function(id){
+      var el=$(id); if(!el) return;
+      if(s[id] !== undefined && s[id] !== '') el.value = s[id];
+    });
+    if(s.activeTab){
+      var t = document.querySelector('.tab[data-panel="'+s.activeTab+'"]');
+      if(t){
+        document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});
+        document.querySelectorAll('.panel').forEach(function(x){x.classList.remove('active');});
+        t.classList.add('active'); $(s.activeTab).classList.add('active');
+      }
+    }
+  }
+
+  // Tab
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click',function(){
+      document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});
+      document.querySelectorAll('.panel').forEach(function(x){x.classList.remove('active');});
+      t.classList.add('active'); $(t.dataset.panel).classList.add('active');
+      persist();
+    });
+  });
+
+  // ===== 保本ROI =====
+  function calcBP(){
+    var price=num($('bp_price')), ship=num($('bp_ship')), ins=num($('bp_insurance')),
+        anchor=num($('bp_anchor')), platRate=num($('bp_plat'))/100,
+        cost=num($('bp_cost')), other=num($('bp_other')), retRate=num($('bp_ret'))/100;
+    var platFee = price*platRate;
+    var totalCost = ship+ins+anchor+cost+other+platFee;
+    var profit = price-totalCost;
+    var marginRate = price>0?profit/price:0;
+    var beROI = (marginRate>0 && retRate<1)?1/(marginRate*(1-retRate)):0;
+
+    $('bp_r_price').textContent = fmtY(price);
+    $('bp_r_platFee').textContent = fmtY(platFee);
+    $('bp_r_totalCost').textContent = fmtY(totalCost);
+    var pe=$('bp_r_profit'); pe.textContent = fmtY(profit);
+    pe.className = 'v '+(profit>=0?'green':'red');
+    $('bp_r_margin').textContent = fmtP(marginRate*100);
+    $('bp_r_ret').textContent = fmtP(retRate*100);
+    $('bp_r_beROI').textContent = beROI>0?beROI.toFixed(2):'—';
+    var st=$('bp_status');
+    if(profit<0){st.className='status lose';st.textContent='毛利额 < 0（单件亏损）';}
+    else{st.className='status win';st.textContent='毛利额 > 0（单件盈利）';}
+    $('bp_r_ship').textContent=fmtY(ship);$('bp_r_ins').textContent=fmtY(ins);
+    $('bp_r_anchor').textContent=fmtY(anchor);$('bp_r_cost').textContent=fmtY(cost);
+    $('bp_r_other').textContent=fmtY(other);$('bp_r_plat').textContent=fmtY(platFee);
+    var denom=marginRate*(1-retRate);
+    $('bp_f_margin').textContent=fmtP(marginRate*100);
+    $('bp_f_denom').textContent='( '+fmtP(marginRate*100)+' × '+(1-retRate).toFixed(2)+' ) = '+denom.toFixed(4);
+    $('bp_f_beROI').textContent=beROI>0?beROI.toFixed(2):'—';
+    persist();
+  }
+  ['bp_price','bp_ship','bp_insurance','bp_anchor','bp_plat','bp_cost','bp_other','bp_ret'].forEach(function(id){$(id).addEventListener('input',calcBP);});
+
+  // ===== 盈亏计算器 =====
+  function calcYK(){
+    var roi=num($('yk_roi')), retRate=num($('yk_ret'))/100,
+        price=num($('yk_price')), ship=num($('yk_ship')),
+        ins=num($('yk_ins')), platRate=num($('yk_platRate'))/100,
+        anchor=num($('yk_anchor')), cost=num($('yk_cost')), other=num($('yk_other'));
+    var dealCost = roi>0 ? price/roi : 0;
+    var platFee = price*platRate;
+    var baseCost = ship+ins+anchor+cost+other;
+    var totalCost = baseCost+platFee+dealCost;
+    var grossProfit = price-baseCost-platFee;
+    var profit = grossProfit*(1-retRate)-dealCost;
+    var marginRate = price>0?profit/price:0;
+
+    $('yk_r_price').textContent=fmtY(price);
+    $('yk_r_dealCost').textContent=fmtY(dealCost);
+    $('yk_r_platFee').textContent=fmtY(platFee);
+    $('yk_r_totalCost').textContent=fmtY(totalCost);
+    var pe=$('yk_r_profit');pe.textContent=fmtY(profit);
+    pe.className='v '+(profit>=0?'green':'red');
+    $('yk_r_margin').textContent=fmtP(marginRate*100);
+    var st=$('yk_status');
+    if(profit<0){st.className='status lose';st.textContent='每件亏损 ❌';}
+    else{st.className='status win';st.textContent='每件盈利 ✅';}
+    $('yk_d_ship').textContent=fmtY(ship);$('yk_d_ins').textContent=fmtY(ins);
+    $('yk_d_plat').textContent=fmtY(platFee);$('yk_d_anchor').textContent=fmtY(anchor);
+    $('yk_d_cost').textContent=fmtY(cost);$('yk_d_other').textContent=fmtY(other);
+    persist();
+  }
+  ['yk_roi','yk_ret','yk_price','yk_ship','yk_ins','yk_platRate','yk_anchor','yk_cost','yk_other'].forEach(function(id){$(id).addEventListener('input',calcYK);});
+
+  // 恢复默认数据：清空记忆并回到初始值
+  var rb=$('resetBtn');
+  if(rb){ rb.addEventListener('click',function(){
+    FIELDS.forEach(function(id){ var el=$(id); if(el && el.defaultValue!=='') el.value=el.defaultValue; });
+    try{ localStorage.removeItem(STORE_KEY); }catch(e){}
+    calcBP(); calcYK();
+  }); }
+
+  restore();
+  calcBP(); calcYK();
+})();
+</script>
+</body>
+</html>
